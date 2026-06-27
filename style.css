@@ -1,0 +1,132 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+}
+
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+p {
+  text-wrap: pretty;
+  text-align: center;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  text-align: center;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7em;
+    padding: 3em 5em;
+}
+
+button {
+    font-size: 2rem;
+    padding: 1em 0.5em;
+    display: block;
+    max-width: 60%;
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: whitesmoke;
+    border: solid blue;
+}
+
+button:disabled:hover {
+    cursor: not-allowed;
+    border: solid red;
+}
+
+body > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5em;
+    align-items: center;
+}
+
+.eventBanner {
+    font-size: 4rem;
+    text-align: center;
+}
+
+.board {
+    display: grid;
+    background-color: black;
+    min-height: max-content;
+    min-width: 40em;
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(3, 1fr); 
+    gap: 0.8em;
+}
+
+.spot {
+    background: white;
+    border: none;
+    cursor: pointer;
+    max-width: none;
+    min-height: 1.4em;
+    font-size: 8rem;
+    padding: 0.05em 0.01em;
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.spot:hover {
+    border: none;
+    background: white;
+}
+
+.playerDisplay {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 13rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.playerDisplay > input {
+    font-size: 3rem;
+    border: none;
+    background-color: white;
+    text-align: center;
+    padding: 0.5em 0.05em;
+}
+
+.playerDisplay > input:hover {
+    border: solid rgb(184, 184, 184);
+}
+
+.playerDisplay > input:focus {
+    border: solid black;
+}
+
+#restart {
+    max-width: none;
+}

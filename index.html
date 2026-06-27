@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe Console Game</title>
+    <title>Tic-Tac-Toe</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
-    <p>Coming soon to the DOM</p>
+    <div class="playerDisplay"><input name="xPlayer" value="Red X" type="text"><button name="xPlayer" class="playerName" data-symbol="X">Submit Player Name</button>X</div>
+    <div>
+        <div class="eventBanner"></div>
+        <div class="board">
+        </div>
+        <div><button id="restart" disabled>Restart</button></div>
+    </div>
+    <div class="playerDisplay"><input name="oPlayer" value="Big O" type="text"><button name="oPlayer" class="playerName" data-symbol="O">Submit Player Name</button>O</div>
 </body>
 </html>

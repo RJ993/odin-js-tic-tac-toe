@@ -16,15 +16,20 @@ function gameBoard(){
     }
 
     const writeSpot = (number, symbol) => {
-        const spot = board[number - 1];
+        const spot = board[number];
         spot.changeValue(symbol);
     }
 
+    const revertSpot = (number) => {
+        const spot = board[number];
+        spot.changeValue(" ");
+    }
+
     const spotIsBlank = (number) => {
-        const spot = board[number - 1];
+        const spot = board[number];
         return spot.getValue() === " " ? true : false
     }
-    return {getBoard, printBoard, writeSpot, spotIsBlank};
+    return {getBoard, printBoard, writeSpot, spotIsBlank, revertSpot};
 }
 
 function gameSpot(){
@@ -40,8 +45,9 @@ function gameSpot(){
 }
 
 function gameController(playerOne = "Red X", playerTwo = "Big O"){
-    console.log("Welcome to Console Tic-Tac-Toe!!!");
-    console.log("To play your turn, please type \"game.playTurn(boardSpot)\"");
+    const conCode = 0
+    const winCode = 1
+    const tieCode = 2 
     const players = [{name: playerOne, symbol: 'X'}, {name: playerTwo, symbol: 'O'}];
     const board = gameBoard();
     const winningCombos = [
@@ -60,26 +66,26 @@ function gameController(playerOne = "Red X", playerTwo = "Big O"){
     const getActivePlayer = () => activePlayer;
 
     const checkWinConditions = (playerSymbol, currentBoard) => {
-        let won = false;
+        let won = conCode;
         winningCombos.forEach((combo) => {
-            if (combo.every(currentSpot => currentBoard[currentSpot].getValue() === playerSymbol)) won = true;
+            if (combo.every(currentSpot => currentBoard[currentSpot].getValue() === playerSymbol)) won = winCode;
         });
-        if (won) console.log(`${activePlayer.name} has won!!! To play again, refresh the page.`);
         return won;
     }
 
     const checkTieCondition = (currentBoard) => {
         if (!currentBoard.some(spot => spot.getValue() === " ")) {
             console.log('Tie!!! To play again, refresh the page.');
-            return true;
+            return tieCode;
         }
+        return conCode;
     }
 
     const checkEndConditions = (playerSymbol) => {
-        let returnValue = false;
+        let returnValue = conCode;
         const currentBoard = board.getBoard();
         returnValue = checkWinConditions(playerSymbol, currentBoard);
-        if (returnValue) return true;
+        if (returnValue == winCode) return returnValue;
         returnValue = checkTieCondition(currentBoard);
         return returnValue;
     }
@@ -88,20 +94,96 @@ function gameController(playerOne = "Red X", playerTwo = "Big O"){
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
     }
 
+    const changePlayerName = (newPlayerName, symbol) => {
+        player = players.find(player => player.symbol == symbol);
+        player.name = newPlayerName;
+    }
+
     const playTurn = (spot) => {
-        if (isNaN(spot)) return;
-        if (checkEndConditions(activePlayer.symbol)) return;
-        if (!board.spotIsBlank(spot)) {
-            console.log('Spot is already filled, please try another spot.');
-            return;
-        }
+        if (isNaN(spot)) return conCode;
+        let endCode = checkEndConditions(activePlayer.symbol);
+        if (endCode != conCode) return endCode;
+        if (!board.spotIsBlank(spot)) return 0;
         board.writeSpot(spot, activePlayer.symbol);
-        board.printBoard();
-        if (checkEndConditions(activePlayer.symbol)) return;
+        endCode = checkEndConditions(activePlayer.symbol);
+        if (endCode != conCode) return endCode;
         switchPlayer();
+        return endCode;
     };
 
-    return {playTurn};
+    const resetBoard = () => {
+        for (let i = 0; i < 9; i++) {
+            board.revertSpot(i);
+        }
+    }
+
+    return {playTurn, getActivePlayer, getBoard: board.getBoard, changePlayerName, resetBoard};
 };
 
-const game = gameController();
+function screenController() {
+    const game = gameController();
+    const boardInterface = document.querySelector(".board");
+    const eventBanner = document.querySelector(".eventBanner");
+    const playerNameButtons = document.querySelectorAll(".playerName");
+    const restartButton = document.getElementById("restart");
+
+    function reset(container){
+        while (container.firstChild){
+            container.removeChild(container.firstChild);
+        }
+    }
+
+
+    const updateScreen = (gameState = 0) => {
+        reset(boardInterface);
+        const board = game.getBoard();
+        const activePlayer = game.getActivePlayer();
+        board.forEach((spot, index) => {
+            const spotButton = document.createElement("button");
+            spotButton.classList.add("spot");
+            spotButton.dataset.number = index;
+            spotButton.textContent = spot.getValue();
+            boardInterface.appendChild(spotButton);
+        })
+        switch (gameState) {
+            case 2:
+                eventBanner.textContent = "Tie! Press the restart button to play again."
+                restartButton.disabled = false;
+                break;
+            case 1:
+                eventBanner.textContent = `${activePlayer.name} wins! Press the restart button to play again.`
+                restartButton.disabled = false;
+                break;
+            default:
+                eventBanner.textContent = `${activePlayer.name}'s turn.`
+        }
+    }
+
+    const boardClickHandler = (e) => {
+        const selectedSpot = e.target.dataset.number
+        if (!selectedSpot) return;
+        gameState = game.playTurn(selectedSpot);
+        updateScreen(gameState);
+    }
+
+    const playerNameClickHandler = (e) => {
+        const input = document.querySelector(`input[name=\"${e.target.name}\"]`);
+        const newPlayerName = input.value;
+        game.changePlayerName(newPlayerName, e.target.dataset.symbol);
+        eventBanner.textContent = `Your name has been changed to ${newPlayerName}`;
+    }
+
+    const restartHandler = (e) => {
+        game.resetBoard();
+        updateScreen();
+        restartButton.disabled = true;
+    }
+    boardInterface.addEventListener('click', boardClickHandler);
+    playerNameButtons.forEach(button => button.addEventListener('click', playerNameClickHandler));
+    restartButton.addEventListener('click', restartHandler);
+
+    updateScreen();
+
+}
+
+screenController();
